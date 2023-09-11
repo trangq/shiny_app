@@ -1,0 +1,105 @@
+
+---
+title: "A Shiny Document"
+output: html_document
+runtime: shiny
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# install.packages("plotly")
+# install.packages("shiny")
+library("plotly")
+library("shiny")
+
+```
+A standard R plot can be made interactive by wrapping
+it in the Shiny `renderPlot()` function. The `selectInput()`
+function creates the input widget to drive the plot.
+
+```{r eruptions, echo=FALSE}
+selectInput(
+  'breaks', label = 'Number of bins:',
+  choices = c(10, 20, 35, 50), selected = 20
+)
+
+renderPlot({
+  par(mar = c(4, 4, .1, .5))
+  hist(
+    faithful$eruptions, as.numeric(input$breaks),
+    col = 'gray', border = 'white',
+    xlab = 'Duration (minutes)', main = ''
+  )
+})
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r,echo=FALSE}
+
+library(shiny)
+library(plotly)
+
+# Sample data
+data <- data.frame(
+      Date = c("2023-09-01", "2023-09-01", "2023-09-02", "2023-09-02"),
+      Category = c("A", "B", "A", "B"),
+      Value = c(20, 15, 25, 30)
+    )
+# Define UI
+ui <- fluidPage(
+  titlePanel("Shiny Bar Chart with Unique Values in R Markdown"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("category_filter", "Select Date", choices = unique(data$Date))
+    ),
+    mainPanel(
+      plotlyOutput("bar_chart")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  output$bar_chart <- renderPlotly({
+    filtered_data <- data %>%
+      filter(Date == input$category_filter)
+    
+    plot_ly(data = filtered_data, x = ~Category, y = ~Value, type = 'bar') %>%
+      layout(
+        title = paste("Bar Chart for Category:", input$category_filter),
+        xaxis = list(title = "Category"),
+        yaxis = list(title = "Value")
+      )
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui = ui, server = server)
+
+```
+
+
+
+```{r,echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(dplyr)
+library(knitr)
+data <- data.frame(
+      Date = c("2023-09-01", "2023-09-01", "2023-09-02", "2023-09-02"),
+      Category = c("A", "B", "A", "B"),
+      Value = c(20, 15, 25, 30)
+    )
+data %>% kable()
+```
+
